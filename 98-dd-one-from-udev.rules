@@ -1,0 +1,1 @@
+KERNEL=="sr[0-9]*", ENV{DEVTYPE}=="disk", ENV{ID_CDROM_MEDIA_DVD}=="1", RUN+="/usr/sbin/systemctl start dd-dvd@dev-%k.service"
