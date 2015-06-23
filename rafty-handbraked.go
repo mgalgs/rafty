@@ -1,26 +1,27 @@
-// -*- compile-command: "go build handbraked.go"; -*-
+// -*- compile-command: "go build rafty-handbraked.go"; -*-
 package main
 
 import (
+	"bytes"
     "fmt"
     "log"
 	"os"
 	"os/exec"
-	"bytes"
-	"strings"
 	"path"
+	"strings"
 
     "github.com/streadway/amqp"
 )
 
 func failOnError(err error, msg string) {
     if err != nil {
-        log.Fatalf("%s: %s", msg, err)
         panic(fmt.Sprintf("%s: %s", msg, err))
     }
 }
 
 func main() {
+    log.Println("*** rafty-handbraked is starting up...")
+
     conn, err := amqp.Dial(os.Getenv("RAFTY_AMQP_URI"))
     failOnError(err, "Failed to connect to RabbitMQ")
     defer conn.Close()
@@ -79,15 +80,16 @@ func main() {
 				continue
 			}
 
+            outfile := fmt.Sprintf("%s/%s.mp4", outdir, title)
 			cmd = exec.Command("HandBrakeCLI",
 				"-i", isopath,
-				"-o", fmt.Sprintf("%s/%s.mp4", outdir, title),
+				"-o", outfile,
 				"--preset=\"High Profile\"")
 			log.Printf("Now ripping...")
 			err = cmd.Run()
 			if err != nil {
 				log.Printf("Got an error: %v", err)
-			}
+            }
 			log.Printf("Handbrake rip finished!  Waiting for more work...")
         }
     }()

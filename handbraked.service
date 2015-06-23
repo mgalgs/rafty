@@ -1,9 +1,0 @@
-[Unit]
-Description=Rafty's Handbrake Daemon
-
-[Service]
-EnvironmentFile=/etc/conf.d/rafty.conf
-Type=simple
-ExecStart=/usr/bin/handbraked
-User=$RAFTY_USER
-Group=$RAFTY_GROUP

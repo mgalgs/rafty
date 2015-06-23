@@ -1,4 +1,4 @@
-// -*- compile-command: "go build handbrakectl.go"; -*-
+// -*- compile-command: "go build rafty-handbrakectl.go"; -*-
 
 package main
 
@@ -12,7 +12,7 @@ import (
     "github.com/streadway/amqp"
 )
 
-const CONFIG_PATH = "/etc/conf.d/rafty.conf"
+const CONFIG_PATH = "/etc/conf.d/rafty-handbraked.conf"
 
 func failOnError(err error, msg string) {
     if err != nil {
@@ -30,7 +30,7 @@ func parseConfig(configPath string) map[string]string {
 
     scanner := bufio.NewScanner(file)
     for scanner.Scan() {
-        line := scanner.Text()
+        line := strings.TrimSpace(scanner.Text())
         if line[0] == '#' { continue }
         if !strings.Contains(line, "=") { continue }
         arr := strings.Split(line, "=")

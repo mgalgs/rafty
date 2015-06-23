@@ -3,7 +3,7 @@
 LOGFILE=/var/log/dd-one-from-udev
 DDRESCUE_LOGFILE=/var/log/dd-one-from-udev-ddrescue
 DDRESCUE_OUTPUT_LOGFILE=/var/log/dd-one-from-udev-ddrescue-output
-CONFFILE=/etc/conf.d/rafty.conf
+CONFFILE=/etc/conf.d/rafty-dd-one.conf
 PROGGIE=$(basename $0)
 
 log()

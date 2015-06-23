@@ -8,27 +8,35 @@ Installation is currently completely manual.  The following steps should
 roughly get you up and running:
 
     $ cd /path/to/rafty
-    $ go build handbrakectl.go
-    $ go build handbraked.go
-    $ sudo ln -sv $PWD/98-dd-one-from-udev.rules /etc/udev/rules.d/98-dd-one-from-udev.rules
-    $ sudo ln -sv $PWD/dd-dvd@.service /etc/systemd/system/
-    $ sudo ln -sv $PWD/handbraked.service /etc/systemd/system/
-    $ sudo ln -sv $PWD/dd-one.sh /usr/bin/
-    $ sudo ln -sv $PWD/handbraked /usr/bin/
-    $ sudo ln -sv $PWD/handbrakectl /usr/bin/
-    $ sudo cp -v rafty.conf /etc/conf.d/
-    $ sudo vim /etc/conf.d/rafty.conf
+    $ go build rafty-handbrakectl.go
+    $ go build rafty-handbraked.go
+    $ sudo ln -sv $PWD/98-rafty-dd-one-from-udev.rules /etc/udev/rules.d/
+    $ sudo ln -sv $PWD/rafty-dd-dvd@.service /etc/systemd/system/
+    $ sudo cp -v rafty-handbraked.service /etc/systemd/system/
+    $ sudo ln -sv $PWD/rafty-dd-one.sh /usr/bin/
+    $ sudo ln -sv $PWD/rafty-handbraked /usr/bin/
+    $ sudo ln -sv $PWD/rafty-handbrakectl /usr/bin/
+    $ sudo cp -v rafty-dd-one.conf /etc/conf.d/
+    $ sudo cp -v rafty-handbraked.conf /etc/conf.d/
+    $ sudo vim /etc/conf.d/rafty-dd-one.conf
+    $ sudo vim /etc/conf.d/rafty-handbraked.conf
+    $ sudo vim /etc/systemd/system/rafty-handbraked.service
 
 You'll also need [`rabbitmq`](https://www.rabbitmq.com/) running.  One easy
-way to get `rabbitmq` is with `docker`:
+way to get `rabbitmq` is with the
+[`dockerfile/rabbitmq`](http://dockerfile.github.io/#/rabbitmq) `docker`
+image and the provided `systemd` service file to start it:
 
     $ sudo docker pull dockerfile/rabbitmq
-    $ sudo docker run -d -p 5672:5672 -p 15672:15672 -v /path/to/rabbitmq.persist/log:/data/log -v /path/to/rabbitmq.persist/mnesia:/data/mnesia dockerfile/rabbitmq
+    $ sudo ln -sv $PWD/rafty-docker-rabbitmq.service /etc/systemd/system/
 
-More info on running `rabbitmq` with the `dockerfile/rabbitmq` `docker`
-image is available [here](http://dockerfile.github.io/#/rabbitmq).  You
-might also want to start the `rabbitmq` container on boot.  You can do so
-with the included `docker-rabbitmq.service` `systemd` service file:
+Everything should now be in place.  Now you can start all the moving parts:
 
-    $ vim handbraked.service # see comments in this file
-    $ sudo ln -sv $PWD/handbraked.service /etc/systemd/system/
+    $ sudo systemctl start rafty-docker-rabbitmq.service
+    $ sudo systemctl start rafty-handbraked.service
+    $ sudo udevadm control --reload
+
+And "that's it"!  Now the next time you insert a DVD the Rafty Rube
+Goldberg machine should kick into action!
+
+Happy Rafting!

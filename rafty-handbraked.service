@@ -1,0 +1,12 @@
+[Unit]
+Description=Rafty's Handbrake Daemon
+
+[Service]
+EnvironmentFile=/etc/conf.d/rafty-handbraked.conf
+Type=simple
+ExecStart=/usr/bin/rafty-handbraked
+
+# I can't seem to user environment variables for these guys... :( Just
+# hand-edit as needed.
+User=mgalgs
+Group=users
