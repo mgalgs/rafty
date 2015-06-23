@@ -3,7 +3,7 @@
 LOGFILE=/var/log/dd-one-from-udev
 DDRESCUE_LOGFILE=/var/log/dd-one-from-udev-ddrescue
 DDRESCUE_OUTPUT_LOGFILE=/var/log/dd-one-from-udev-ddrescue-output
-CONFFILE=/etc/conf.d/dd-one.conf
+CONFFILE=/etc/conf.d/rafty.conf
 PROGGIE=$(basename $0)
 
 log()
@@ -19,7 +19,7 @@ log "hello from $0"
 [[ -z "$DEVNAME" ]] && { log "DEVNAME env var not set\! bailing..."; exit 1; }
 [[ -r $CONFFILE ]] || { log "Couldn't read $CONFFILE"; exit 1; }
 source $CONFFILE
-[[ -z "$OUTDIR" ]] && { log "Bogus config. Missing OUTDIR."; exit 1; }
+[[ -z "$ISOOUTDIR" ]] && { log "Bogus config. Missing ISOOUTDIR."; exit 1; }
 [[ -z "$ISOOWNER" ]] && { log "Bogus config. Missing ISOOWNER."; exit 1; }
 [[ -z "$ISOGROUP" ]] && { log "Bogus config. Missing ISOGROUP."; exit 1; }
 
@@ -65,9 +65,9 @@ if [[ -z "$isobase" ]]; then
 fi
 [[ -z "$isobase" ]] && { log "Couldn't get disc title. bailing."; errorout; }
 isoname="${isobase}.iso"
-IMGNAME=$OUTDIR/$isoname
+IMGNAME=$ISOOUTDIR/$isoname
 log "ripping $isoname to $IMGNAME"
-mkdir -pv $OUTDIR
+mkdir -pv $ISOOUTDIR
 success=no
 for blocksize in 64k 8k 4k; do
     echo "trying dd with blocksize=$blocksize"
@@ -97,8 +97,8 @@ done
     done
 }
 
-chown $ISOOWNER:$ISOGROUP $OUTDIR/$isoname
+chown $ISOOWNER:$ISOGROUP $ISOOUTDIR/$isoname
 log 'done!'
 eject $DEVNAME
 cd $(dirname $0)
-./handbrakectl newiso $OUTDIR/$isoname
+./handbrakectl newiso $ISOOUTDIR/$isoname

@@ -1,0 +1,11 @@
+[Unit]
+Description=Rabbitmq container from dockerfiles/rabbitmq
+# might want to change to docker.service:
+Requires=docker-custom.service
+After=docker-custom.service
+
+[Service]
+ExecStart=/usr/bin/docker run -p 5672:5672 -p 15672:15672 -v /butter/rabbitmq.persist/log:/data/log -v /butter/rabbitmq.persist/mnesia:/data/mnesia dockerfile/rabbitmq
+
+[Install]
+WantedBy=multi-user.target

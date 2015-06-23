@@ -13,9 +13,6 @@ import (
     "github.com/streadway/amqp"
 )
 
-const AMQP_URI = "amqp://guest:guest@localhost:5672/"
-const OUTPUT_PATH = "/media/space/Movies"
-
 func failOnError(err error, msg string) {
     if err != nil {
         log.Fatalf("%s: %s", msg, err)
@@ -24,7 +21,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-    conn, err := amqp.Dial(AMQP_URI)
+    conn, err := amqp.Dial(os.Getenv("RAFTY_AMQP_URI"))
     failOnError(err, "Failed to connect to RabbitMQ")
     defer conn.Close()
 
@@ -75,7 +72,7 @@ func main() {
 				continue
 			}
 			title := strings.Trim(out.String(), "\n")
-			outdir := path.Join(OUTPUT_PATH, title)
+			outdir := path.Join(os.Getenv("RAFTY_OUTPUT_PATH"), title)
 			err = os.MkdirAll(outdir, 0777)
 			if err != nil {
 				log.Printf("Error making dir %s: %v", outdir, err)

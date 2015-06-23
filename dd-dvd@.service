@@ -6,4 +6,4 @@ After=%i.device
 [Service]
 Type=oneshot
 Environment=DEVNAME=/%I
-ExecStart=dd-one.sh
+ExecStart=/usr/bin/dd-one.sh

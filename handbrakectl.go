@@ -7,11 +7,12 @@ import (
     "log"
 	"os"
 	"strings"
+    "bufio"
 
     "github.com/streadway/amqp"
 )
 
-const AMQP_URI = "amqp://guest:guest@localhost:5672/"
+const CONFIG_PATH = "/etc/conf.d/rafty.conf"
 
 func failOnError(err error, msg string) {
     if err != nil {
@@ -20,8 +21,31 @@ func failOnError(err error, msg string) {
     }
 }
 
+func parseConfig(configPath string) map[string]string {
+    file, err := os.Open(configPath)
+    failOnError(err, fmt.Sprintf("Couldn't open %s", configPath))
+    defer file.Close()
+
+    cfg := make(map[string]string)
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        line := scanner.Text()
+        if line[0] == '#' { continue }
+        if !strings.Contains(line, "=") { continue }
+        arr := strings.Split(line, "=")
+        cfg[arr[0]] = arr[1]
+    }
+
+    err = scanner.Err()
+    failOnError(err, fmt.Sprintf("Error scanning config file: ", configPath))
+    fmt.Println(cfg)
+    return cfg
+}
+
 func main() {
-    conn, err := amqp.Dial(AMQP_URI)
+    cfg := parseConfig(CONFIG_PATH)
+    conn, err := amqp.Dial(cfg["RAFTY_AMQP_URI"])
     failOnError(err, "Failed to connect to RabbitMQ")
     defer conn.Close()
 
