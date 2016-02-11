@@ -71,7 +71,7 @@ IMGNAME=$ISOOUTDIR/$isoname
 log "ripping $isoname to $IMGNAME"
 mkdir -pv $ISOOUTDIR
 success=no
-for blocksize in 64k 8k 4k; do
+for blocksize in 64k 8k 4k 1024; do
     echo "trying dd with blocksize=$blocksize"
     dd if=$DEVNAME of=$IMGNAME bs=$blocksize || {
         echo "blocksize=$blocksize failed..."
