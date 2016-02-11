@@ -22,6 +22,8 @@ source $CONFFILE
 [[ -z "$ISOOUTDIR" ]] && { log "Bogus config. Missing ISOOUTDIR."; exit 1; }
 [[ -z "$ISOOWNER" ]] && { log "Bogus config. Missing ISOOWNER."; exit 1; }
 [[ -z "$ISOGROUP" ]] && { log "Bogus config. Missing ISOGROUP."; exit 1; }
+EJECT=eject
+[[ "$NOEJECT" = 1 ]] && EJECT=true
 
 [[ $EUID -eq 0 ]] || { log "please run as root"; exit 1; }
 
@@ -37,7 +39,7 @@ waitfordisc()
     # bonus mount seems to help get things going... don't ask me...
     tmpmount=$(mktemp -d)
     sleep 3
-    mount -t iso9660 -o ro $DEVNAME $tmpmount || { log "Couldn't mount $DEVNAME to $tmpmount... bailling"; errorout; }
+    mount -t iso9660 -o ro $DEVNAME $tmpmount || { log "Couldn't mount $DEVNAME to $tmpmount... bailing"; errorout; }
     # sometimes umount takes some convincing... I don't know...
     success=no
     for i in $(seq 5); do
@@ -51,7 +53,7 @@ waitfordisc()
 
 errorout()
 {
-    eject $DEVNAME
+    $EJECT $DEVNAME
     exit 1
 }
 
@@ -99,6 +101,6 @@ done
 
 chown $ISOOWNER:$ISOGROUP $ISOOUTDIR/$isoname
 log 'done!'
-eject $DEVNAME
+$EJECT $DEVNAME
 cd $(dirname $0)
 ./handbrakectl newiso $ISOOUTDIR/$isoname
