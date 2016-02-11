@@ -104,4 +104,4 @@ chown $ISOOWNER:$ISOGROUP $ISOOUTDIR/$isoname
 log 'done!'
 $EJECT $DEVNAME
 cd $(dirname $0)
-./handbrakectl newiso $ISOOUTDIR/$isoname
+./rafty-handbrakectl newiso $ISOOUTDIR/$isoname
