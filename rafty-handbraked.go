@@ -85,7 +85,7 @@ func main() {
 				"-i", isopath,
 				"-o", outfile,
 				"--preset=\"High Profile\"")
-			log.Printf("Now ripping...")
+			log.Printf("Now ripping with: %s", cmd)
 			err = cmd.Run()
 			if err != nil {
 				log.Printf("Got an error: %v", err)
