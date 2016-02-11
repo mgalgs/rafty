@@ -79,6 +79,7 @@ for blocksize in 64k 8k 4k; do
         continue
     }
     success=yes
+    break
 done
 [[ $success = yes ]] || {
     log "dd failed. making one last attempt with ddrescue..."
