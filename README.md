@@ -12,7 +12,7 @@ roughly get you up and running:
     $ sudo make install
 
 You also need to edit two configuration files and a systemd service
-according to your system:
+(updating them with your username, etc):
 
     /etc/conf.d/rafty-dd-one.conf
     /etc/conf.d/rafty-handbraked.conf
