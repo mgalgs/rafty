@@ -1,8 +1,12 @@
 INSTALL_PREFIX = /usr/bin
 CONF_PREFIX = /etc/conf.d
 
-all:
+all: rafty-handbrakectl rafty-handbraked
+
+rafty-handbrakectl: rafty-handbrakectl.go
 	go build rafty-handbrakectl.go
+
+rafty-handbraked: rafty-handbraked.go
 	go build rafty-handbraked.go
 
 install:
