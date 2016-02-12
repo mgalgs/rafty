@@ -4,7 +4,7 @@ horizontally.  You can read more about the design in
 
 # Pre-requisites
 
-`HandBrakeCLI`, `lsdvd`, `mplayer`, `dd`, `ddrescue` (optional)
+`HandBrakeCLI`, `lsdvd`, `mplayer`, `dd`, `rabbitmq`, `ddrescue` (optional)
 
 # Installation
 
