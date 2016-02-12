@@ -9,29 +9,20 @@ roughly get you up and running:
 
     $ cd /path/to/rafty
     $ make deps all
-    $ sudo ln -sv $PWD/98-rafty-dd-one-from-udev.rules /etc/udev/rules.d/
-    $ sudo ln -sv $PWD/rafty-dd-dvd@.service /etc/systemd/system/
-    $ sudo cp -v rafty-handbraked.service /etc/systemd/system/
-    $ sudo ln -sv $PWD/rafty-dd-one.sh /usr/bin/
-    $ sudo ln -sv $PWD/rafty-handbraked /usr/bin/
-    $ sudo ln -sv $PWD/rafty-handbrakectl /usr/bin/
-    $ sudo cp -v rafty-dd-one.conf /etc/conf.d/
-    $ sudo cp -v rafty-handbraked.conf /etc/conf.d/
-    $ sudo vim /etc/conf.d/rafty-dd-one.conf
-    $ sudo vim /etc/conf.d/rafty-handbraked.conf
-    $ sudo vim /etc/systemd/system/rafty-handbraked.service
+    $ sudo make install
 
-You'll also need [`rabbitmq`](https://www.rabbitmq.com/) running.  One easy
-way to get `rabbitmq` is with the
-[`dockerfile/rabbitmq`](http://dockerfile.github.io/#/rabbitmq) `docker`
-image and the provided `systemd` service file to start it:
+You also need to edit two configuration files and a systemd service
+according to your system:
 
-    $ sudo docker pull dockerfile/rabbitmq
-    $ sudo ln -sv $PWD/rafty-docker-rabbitmq.service /etc/systemd/system/
+    /etc/conf.d/rafty-dd-one.conf
+    /etc/conf.d/rafty-handbraked.conf
+    /etc/systemd/system/rafty-handbraked.service
 
-Everything should now be in place.  Now you can start all the moving parts:
+You'll also need [`rabbitmq`](https://www.rabbitmq.com/) running on
+`localhost`.
 
-    $ sudo systemctl start rafty-docker-rabbitmq.service
+Now start the daemon and reload your udev rules:
+
     $ sudo systemctl start rafty-handbraked.service
     $ sudo udevadm control --reload
 
