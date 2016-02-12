@@ -30,6 +30,7 @@ EJECT=eject
 waitfordisc()
 {
     log "waiting for disc and dancing around..."
+    sleep 3
     # make sure the disc is unmounted first:
     while read line; do
 	sleep 3
@@ -40,6 +41,8 @@ waitfordisc()
     tmpmount=$(mktemp -d)
     sleep 3
     mount -t iso9660 -o ro $DEVNAME $tmpmount || { log "Couldn't mount $DEVNAME to $tmpmount... bailing"; errorout; }
+    log "playing a few seconds to /dev/null to grease the wheels..."
+    mplayer -dvd-device $DEVNAME -ao null -vo null -endpos 10 dvd://
     # sometimes umount takes some convincing... I don't know...
     success=no
     for i in $(seq 5); do
@@ -59,6 +62,7 @@ errorout()
 
 [[ -e "$DEVNAME" ]] || { log "Can't find $DEVNAME"; exit 1; }
 waitfordisc
+
 isobase=$(blkid $DEVNAME -o value -s LABEL)
 if [[ -z "$isobase" ]]; then
     # couldn't get disc title with blkid :( let's try lsdvd.
@@ -70,6 +74,7 @@ isoname="${isobase}.iso"
 IMGNAME=$ISOOUTDIR/$isoname
 log "ripping $isoname to $IMGNAME"
 mkdir -pv $ISOOUTDIR
+
 success=no
 for blocksize in 64k 8k 4k 1024; do
     echo "trying dd with blocksize=$blocksize"
@@ -81,6 +86,7 @@ for blocksize in 64k 8k 4k 1024; do
     success=yes
     break
 done
+
 [[ $success = yes ]] || {
     log "dd failed. making one last attempt with ddrescue..."
 
