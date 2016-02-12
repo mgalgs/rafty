@@ -43,4 +43,9 @@ minutes with `mplayer` before attempting to rip them.  You'll need to use
 the above command to start the rip process after "priming" the disc in
 those cases.
 
+If you have some isos sitting around you can send them to the encode queue
+with:
+
+    $ rafty-handbrakectl newiso /path/to/movie.iso
+
 Happy Rafting!
