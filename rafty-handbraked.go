@@ -21,6 +21,10 @@ func failOnError(err error, msg string) {
 	}
 }
 
+// We assume that the main track is the longest one.  This might not be
+// true all the time... :(
+//
+// We use lsdvd to figure out which track is longest.
 func getMainTrack(isopath string) (error, string) {
 	var err error
 
