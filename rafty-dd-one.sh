@@ -24,6 +24,7 @@ source $CONFFILE
 [[ -z "$ISOGROUP" ]] && { log "Bogus config. Missing ISOGROUP."; exit 1; }
 EJECT=eject
 [[ "$NOEJECT" = 1 ]] && EJECT=true
+[[ -z "$ISOOUTDIR_REMOTE" ]] && ISOOUTDIR_REMOTE="$ISOOUTDIR"
 
 [[ $EUID -eq 0 ]] || { log "please run as root"; exit 1; }
 
@@ -110,4 +111,4 @@ chown $ISOOWNER:$ISOGROUP $ISOOUTDIR/$isoname
 log 'done!'
 $EJECT $DEVNAME
 cd $(dirname $0)
-./rafty-handbrakectl newiso $ISOOUTDIR/$isoname
+./rafty-handbrakectl newiso $ISOOUTDIR_REMOTE/$isoname
