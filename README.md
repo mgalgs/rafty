@@ -8,8 +8,7 @@ Installation is currently completely manual.  The following steps should
 roughly get you up and running:
 
     $ cd /path/to/rafty
-    $ go build rafty-handbrakectl.go
-    $ go build rafty-handbraked.go
+    $ make deps all
     $ sudo ln -sv $PWD/98-rafty-dd-one-from-udev.rules /etc/udev/rules.d/
     $ sudo ln -sv $PWD/rafty-dd-dvd@.service /etc/systemd/system/
     $ sudo cp -v rafty-handbraked.service /etc/systemd/system/
