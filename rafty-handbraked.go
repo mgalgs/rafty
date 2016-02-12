@@ -3,11 +3,13 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/streadway/amqp"
@@ -17,6 +19,26 @@ func failOnError(err error, msg string) {
 	if err != nil {
 		panic(fmt.Sprintf("%s: %s", msg, err))
 	}
+}
+
+func getMainTrack(isopath string) (error, string) {
+	var err error
+
+	// lsdvd ~/isos/MULAN_USA.iso| grep Longest | cut -d: -f2 | cut -c2
+	cmd := exec.Command("lsdvd", isopath)
+	output, err := cmd.Output()
+	if err != nil {
+		log.Printf("Error retrieving disc listing: %v", err)
+		return err, ""
+	}
+	for _, line := range strings.Split(string(output[:]), "\n") {
+		re := regexp.MustCompile(`^Longest track: (\d+)$`)
+		res := re.FindStringSubmatch(line)
+		if res != nil {
+			return nil, res[1]
+		}
+	}
+	return errors.New("Couldn't find Longest track"), ""
 }
 
 func main() {
@@ -80,11 +102,18 @@ func main() {
 				continue
 			}
 
+			err, maintrack := getMainTrack(isopath)
+			if err != nil {
+				continue
+			}
+			log.Printf("Found main track: %s", maintrack);
+
 			outfile := fmt.Sprintf("%s/%s.mp4", outdir, title)
 			cmd = exec.Command("HandBrakeCLI",
 				"-i", isopath,
 				"-o", outfile,
-				"--preset=\"High Profile\"")
+				"--preset=\"High Profile\"",
+				"--title", maintrack)
 			log.Printf("Now ripping with: %s", cmd)
 			err = cmd.Run()
 			if err != nil {
