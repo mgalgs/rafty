@@ -29,4 +29,18 @@ Now start the daemon and reload your udev rules:
 And "that's it"!  Now the next time you insert a DVD the Rafty Rube
 Goldberg machine should kick into action!
 
+# Manual Invocation
+
+If the `udev` rafting isn't working raftily enough for you, you can invoke
+the rip+encode process manually with:
+
+    $ sudo DEVNAME=/dev/sr0 rafty-dd-one.sh
+
+(adjusting `/dev/sr0` as necessary).
+
+I've found that some discs need to be "primed" by playing them for a few
+minutes with `mplayer` before attempting to rip them.  You'll need to use
+the above command to start the rip process after "priming" the disc in
+those cases.
+
 Happy Rafting!
