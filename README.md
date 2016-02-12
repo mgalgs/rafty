@@ -2,10 +2,13 @@ Rafty is a hacky DVD backup solution with the potential to scale
 horizontally.  You can read more about the design in
 [this blog post](http://mgalgs.github.io/2015/04/02/rafty-dvd-backups-using-systemd-docker-rabbitmq-and-go.html).
 
+# Pre-requisites
+
+`HandBrakeCLI`, `lsdvd`, `mplayer`, `dd`, `ddrescue` (optional)
+
 # Installation
 
-Installation is currently completely manual.  The following steps should
-roughly get you up and running:
+The following steps should roughly get you up and running:
 
     $ cd /path/to/rafty
     $ make deps all
