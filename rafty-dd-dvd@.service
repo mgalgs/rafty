@@ -1,7 +1,6 @@
 [Unit]
 Description=dd DVD from %I to iso
-BindsTo=%i.device
-After=%i.device
+# After=%i.device
 
 [Service]
 Type=oneshot
