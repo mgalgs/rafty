@@ -22,6 +22,7 @@ source $CONFFILE
 [[ -z "$ISOOUTDIR" ]] && { log "Bogus config. Missing ISOOUTDIR."; exit 1; }
 [[ -z "$ISOOWNER" ]] && { log "Bogus config. Missing ISOOWNER."; exit 1; }
 [[ -z "$ISOGROUP" ]] && { log "Bogus config. Missing ISOGROUP."; exit 1; }
+[[ -n "$DISABLE" ]] && { log "rafty-dd-one.sh is disabled. Bailing."; exit 0; }
 EJECT=eject
 [[ "$NOEJECT" = 1 ]] && EJECT=true
 [[ -z "$ISOOUTDIR_REMOTE" ]] && ISOOUTDIR_REMOTE="$ISOOUTDIR"
