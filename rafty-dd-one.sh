@@ -43,8 +43,9 @@ waitfordisc()
     tmpmount=$(mktemp -d)
     sleep 3
     mount -t iso9660 -o ro $DEVNAME $tmpmount || { log "Couldn't mount $DEVNAME to $tmpmount... bailing"; errorout; }
-    log "playing a few seconds to /dev/null to grease the wheels..."
-    mplayer -dvd-device $DEVNAME -ao null -vo null -endpos 10 dvd://
+    local longest=$(lsdvd /dev/sr0 | grep "Longest track:" | cut -d: -f2 | cut -c2-)
+    log "playing a few seconds of the longest title ($longest) to /dev/null to grease the wheels..."
+    mplayer -dvd-device $DEVNAME -ao null -vo null -endpos 20 dvd://$longest
     # sometimes umount takes some convincing... I don't know...
     success=no
     for i in $(seq 5); do
