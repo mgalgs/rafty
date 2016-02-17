@@ -77,11 +77,25 @@ IMGNAME=$ISOOUTDIR/$isoname
 log "ripping $isoname to $IMGNAME"
 mkdir -pv $ISOOUTDIR
 
+maybe_keep() {
+    [[ -e ${IMGNAME}.maybe ]] || true > ${IMGNAME}.maybe
+    # if the newbie is bigger than the oldbie, keep the noob
+    if [[ $(du ${IMGNAME} | awk '{print $1}') -gt $(du ${IMGNAME}.maybe | awk '{print $1}') ]]; then
+        log "Keeping for maybeness"
+        mv -v $IMGNAME ${IMGNAME}.maybe
+    else
+        log "Previous .maybe is larger, so keeping it."
+    fi
+}
+
 success=no
-for blocksize in 64k 8k 4k 1024; do
+for blocksize in 64k 8k; do
     echo "trying dd with blocksize=$blocksize"
-    dd if=$DEVNAME of=$IMGNAME bs=$blocksize || {
-        echo "blocksize=$blocksize failed..."
+    dd if=$DEVNAME of=$IMGNAME bs=$blocksize
+    ret=$?
+    [[ $ret -eq 0 ]] || {
+        echo "blocksize=$blocksize failed with ret=$ret..."
+        maybe_keep
         sleep 2
         continue
     }
@@ -104,8 +118,16 @@ done
         log "still no... Just try one more time..."
         ddrescue    -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
         log "Nothing worked. Relenting..."
-        errorout
+        break
     done
+    maybe_keep
+    if [[ $(du ${IMGNAME}.maybe | awk '{print $1}') -gt 6010832 ]]; then
+        log "${IMGNAME}.maybe is pretty large ($(du -h ${IMGNAME}.maybe)). Keeping it and calling it a day."
+        mv -v ${IMGNAME}.maybe $IMGNAME
+    else
+        log "We don't even have a hefty maybe file... :( Accepting defeat."
+        errorout
+    fi
 }
 
 chown $ISOOWNER:$ISOGROUP $ISOOUTDIR/$isoname
