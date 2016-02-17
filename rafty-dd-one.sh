@@ -12,10 +12,9 @@ log()
     date +"%F %T $PROGGIE $*" >> $LOGFILE
 }
 
-log "hello from $PROGGIE"
+log "Rafting around with $PROGGIE"
 
 # $DEVNAME should come from udev or systemd
-log "hello from $0"
 [[ -z "$DEVNAME" ]] && { log "DEVNAME env var not set\! bailing..."; exit 1; }
 [[ -r $CONFFILE ]] || { log "Couldn't read $CONFFILE"; exit 1; }
 source $CONFFILE
