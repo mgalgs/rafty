@@ -12,8 +12,6 @@ log()
     date +"%F %T $PROGGIE $*" >> $LOGFILE
 }
 
-log "Rafting around with $PROGGIE"
-
 # $DEVNAME should come from udev or systemd
 [[ -z "$DEVNAME" ]] && { log "DEVNAME env var not set\! bailing..."; exit 1; }
 [[ -r $CONFFILE ]] || { log "Couldn't read $CONFFILE"; exit 1; }
@@ -27,6 +25,8 @@ EJECT=eject
 [[ -z "$ISOOUTDIR_REMOTE" ]] && ISOOUTDIR_REMOTE="$ISOOUTDIR"
 
 [[ $EUID -eq 0 ]] || { log "please run as root"; exit 1; }
+
+log "Rafting around with $PROGGIE for $DEVNAME"
 
 waitfordisc()
 {
