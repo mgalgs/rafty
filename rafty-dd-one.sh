@@ -134,4 +134,5 @@ chown $ISOOWNER:$ISOGROUP $ISOOUTDIR/$isoname
 log 'done!'
 $EJECT $DEVNAME
 cd $(dirname $0)
+log "Posting newiso: $ISOOUTDIR_REMOTE/$isoname"
 ./rafty-handbrakectl newiso $ISOOUTDIR_REMOTE/$isoname
