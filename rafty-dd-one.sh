@@ -1,8 +1,8 @@
 #!/bin/bash
 
-LOGFILE=/var/log/dd-one-from-udev
-DDRESCUE_LOGFILE=/var/log/dd-one-from-udev-ddrescue
-DDRESCUE_OUTPUT_LOGFILE=/var/log/dd-one-from-udev-ddrescue-output
+LOGFILE=/var/log/dd-one-from-udev-$(basename $DEVNAME)
+DDRESCUE_LOGFILE=/var/log/dd-one-from-udev-ddrescue-$(basename $DEVNAME)
+DDRESCUE_OUTPUT_LOGFILE=/var/log/dd-one-from-udev-ddrescue-output-$(basename $DEVNAME)
 CONFFILE=/etc/conf.d/rafty-dd-one.conf
 PROGGIE=$(basename $0)
 
@@ -26,7 +26,7 @@ EJECT=eject
 
 [[ $EUID -eq 0 ]] || { log "please run as root"; exit 1; }
 
-log "Rafting around with $PROGGIE for $DEVNAME"
+log "Rafting around with $PROGGIE for ${DEVNAME}. Log: $LOGFILE"
 
 waitfordisc()
 {
@@ -113,14 +113,16 @@ done
     while :; do
         log "first trying with direct access"
         ddrescue -d -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
+        maybe_keep
         log "still no dice. Trying with retrim."
         ddrescue -d -R -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
+        maybe_keep
         log "still no... Just try one more time..."
         ddrescue    -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
+        maybe_keep
         log "Nothing worked. Relenting..."
         break
     done
-    maybe_keep
     if [[ $(du ${IMGNAME}.maybe | awk '{print $1}') -gt 6010832 ]]; then
         log "${IMGNAME}.maybe is pretty large ($(du -h ${IMGNAME}.maybe)). Keeping it and calling it a day."
         mv -v ${IMGNAME}.maybe $IMGNAME
