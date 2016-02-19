@@ -2,7 +2,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -43,6 +42,22 @@ func getMainTrack(isopath string) (error, string) {
 		}
 	}
 	return errors.New("Couldn't find Longest track"), ""
+}
+
+func getDiscTitle(isopath string) (error, string) {
+	cmd := exec.Command("lsdvd", isopath)
+	output, err := cmd.Output()
+	if err != nil {
+		log.Printf("Error retrieving disc title: %v", err)
+		return err, ""
+	}
+	line := strings.Split(string(output[:]), "\n")[0]
+	re := regexp.MustCompile(`^Disc Title: (.*)$`)
+	res := re.FindStringSubmatch(line)
+	if res != nil {
+		return nil, res[1]
+	}
+	return errors.New("Couldn't find disc title"), ""
 }
 
 func main() {
@@ -87,18 +102,10 @@ func main() {
 			var cmd *exec.Cmd
 			var err error
 
-			cmd = exec.Command("blkid",
-				"-o", "value",
-				"-s", "LABEL",
-				isopath)
-			var out bytes.Buffer
-			cmd.Stdout = &out
-			err = cmd.Run()
+			err, title := getDiscTitle(isopath)
 			if err != nil {
-				log.Printf("Error retrieving disc title: %v", err)
 				continue
 			}
-			title := strings.Trim(out.String(), "\n")
 			outdir := path.Join(os.Getenv("RAFTY_OUTPUT_PATH"), title)
 			err = os.MkdirAll(outdir, 0777)
 			if err != nil {
