@@ -49,7 +49,11 @@ func parseConfig(configPath string) map[string]string {
 
 func main() {
 	cfg := parseConfig(CONFIG_PATH)
-	conn, err := amqp.Dial(cfg["RAFTY_AMQP_URI"])
+	rabbituri := os.Getenv("RAFTY_AMQP_URI")
+	if rabbituri == "" {
+		rabbituri = cfg["RAFTY_AMQP_URI"]
+	}
+	conn, err := amqp.Dial(rabbituri)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
