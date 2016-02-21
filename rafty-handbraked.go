@@ -3,6 +3,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -20,11 +21,11 @@ func failOnError(err error, msg string) {
 	}
 }
 
-// We assume that the main track is the longest one.  This might not be
+// We assume that the main title is the longest one.  This might not be
 // true all the time... :(
 //
-// We use lsdvd to figure out which track is longest.
-func getMainTrack(isopath string) (error, string) {
+// We use lsdvd to figure out which title is longest.
+func getMainTitle(isopath string) (error, string) {
 	var err error
 
 	cmd := exec.Command("lsdvd", isopath)
@@ -40,7 +41,7 @@ func getMainTrack(isopath string) (error, string) {
 			return nil, res[1]
 		}
 	}
-	return errors.New("Couldn't find Longest track"), ""
+	return errors.New("Couldn't find Longest title"), ""
 }
 
 func getDiscTitle(isopath string) (error, string) {
@@ -95,35 +96,53 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			isopath := string(d.Body[:])
+			parts := strings.Split(string(d.Body[:]), " ")
+			flagset := flag.NewFlagSet(parts[0], flag.ContinueOnError)
+			isopath := parts[0]
 			log.Printf("Got iso from queue: %v", isopath)
 
 			var cmd *exec.Cmd
 			var err error
 
-			err, title := getDiscTitle(isopath)
-			if err != nil {
-				continue
+			disctitleopt := flagset.String("disctitle", "", "Movie title")
+			titleopt := flagset.String("title", "", "Which title to rip (lsdvd for a listing)")
+			flagset.Parse(parts[1:])
+
+			disctitle := *disctitleopt
+			title := *titleopt
+
+			if disctitle == "" {
+				err, disctitle := getDiscTitle(isopath)
+				if err != nil {
+					continue
+				}
+				log.Printf("Found disc title: %s", disctitle);
+			} else {
+				log.Printf("Using disc title from args: %s", disctitle)
 			}
-			outdir := path.Join(os.Getenv("RAFTY_OUTPUT_PATH"), title)
+			outdir := path.Join(os.Getenv("RAFTY_OUTPUT_PATH"), disctitle)
 			err = os.MkdirAll(outdir, 0777)
 			if err != nil {
 				log.Printf("Error making dir %s: %v", outdir, err)
 				continue
 			}
 
-			err, maintrack := getMainTrack(isopath)
-			if err != nil {
-				continue
+			if title == "" {
+				err, title := getMainTitle(isopath)
+				if err != nil {
+					continue
+				}
+				log.Printf("Found main title: %s", title);
+			} else {
+				log.Printf("Using main title from args: %s", title)
 			}
-			log.Printf("Found main track: %s", maintrack);
 
-			outfile := fmt.Sprintf("%s/%s.mp4", outdir, title)
+			outfile := fmt.Sprintf("%s/%s.mp4", outdir, disctitle)
 			cmd = exec.Command("HandBrakeCLI",
 				"-i", isopath,
 				"-o", outfile,
 				"--preset=\"High Profile\"",
-				"--title", maintrack)
+				"--title", title)
 			log.Printf("Now ripping with: %s", cmd)
 			err = cmd.Run()
 			if err != nil {
