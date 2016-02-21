@@ -27,7 +27,6 @@ func failOnError(err error, msg string) {
 func getMainTrack(isopath string) (error, string) {
 	var err error
 
-	// lsdvd ~/isos/MULAN_USA.iso| grep Longest | cut -d: -f2 | cut -c2
 	cmd := exec.Command("lsdvd", isopath)
 	output, err := cmd.Output()
 	if err != nil {
