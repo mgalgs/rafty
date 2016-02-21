@@ -112,7 +112,7 @@ func main() {
 			title := *titleopt
 
 			if disctitle == "" {
-				err, disctitle := getDiscTitle(isopath)
+				err, disctitle = getDiscTitle(isopath)
 				if err != nil {
 					continue
 				}
@@ -128,7 +128,7 @@ func main() {
 			}
 
 			if title == "" {
-				err, title := getMainTitle(isopath)
+				err, title = getMainTitle(isopath)
 				if err != nil {
 					continue
 				}
