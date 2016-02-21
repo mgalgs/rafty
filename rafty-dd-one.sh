@@ -109,20 +109,12 @@ done
     # for all: block size=2048 (which is what the manual suggests for
     # cdroms)
 
-    # need a loop for the `break'...
-    while :; do
-        log "first trying with direct access"
-        ddrescue -d -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
-        maybe_keep
-        log "still no dice. Trying with retrim."
-        ddrescue -d -R -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
-        maybe_keep
-        log "still no... Just try one more time..."
-        ddrescue    -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
-        maybe_keep
-        log "Nothing worked. Relenting..."
-        break
-    done
+    log "trying ddrescue with direct access"
+    ddrescue -d -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE && break
+    maybe_keep
+    log "If that didn't work you can try these on your own time:"
+    log "    ddrescue -d -R -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE"
+    log "    ddrescue -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE"
     if [[ $(du ${IMGNAME}.maybe | awk '{print $1}') -gt 6010832 ]]; then
         log "${IMGNAME}.maybe is pretty large ($(du -h ${IMGNAME}.maybe)). Keeping it and calling it a day."
         mv -v ${IMGNAME}.maybe $IMGNAME
