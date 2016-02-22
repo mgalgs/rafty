@@ -109,6 +109,9 @@ done
     # for all: block size=2048 (which is what the manual suggests for
     # cdroms)
 
+    # clear previous ddrescue working files
+    true > $DDRESCUE_LOGFILE
+    true > $DDRESCUE_OUTPUT_LOGFILE
     log "trying ddrescue with direct access"
     ddrescue -d -r 1 -b2048 $DEVNAME $IMGNAME $DDRESCUE_LOGFILE &>$DDRESCUE_OUTPUT_LOGFILE
     maybe_keep
